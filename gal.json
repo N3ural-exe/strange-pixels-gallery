@@ -1,0 +1,24 @@
+{
+  "eventName": "Annual Campus Tech Summit 2026",
+  "eventDate": "September 24, 2026",
+  "photos": [
+    {
+      "id": "1",
+      "title": "Keynote Address",
+      "previewUrl": "https://pub-xxx.r2.dev/tech-summit/photo1.jpg",
+      "downloadUrl": "https://pub-xxx.r2.dev/tech-summit/photo1.jpg"
+    },
+    {
+      "id": "2",
+      "title": "Panel Discussion",
+      "previewUrl": "https://pub-xxx.r2.dev/tech-summit/photo2.jpg",
+      "downloadUrl": "https://pub-xxx.r2.dev/tech-summit/photo2.jpg"
+    },
+    {
+      "id": "3",
+      "title": "Networking Session",
+      "previewUrl": "https://pub-xxx.r2.dev/tech-summit/photo3.jpg",
+      "downloadUrl": "https://pub-xxx.r2.dev/tech-summit/photo3.jpg"
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Strange Pixels | Event Gallery</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col font-sans">
+
+  <!-- Header / Branding -->
+  <header class="border-b border-gray-800 bg-gray-900/50 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="bg-indigo-600 p-2 rounded-lg text-white">
+          <i data-lucide="camera" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-wide uppercase text-white">Strange Pixels</h1>
+          <p class="text-xs text-gray-400">Official Event Delivery Portal</p>
+        </div>
+      </div>
+      <div class="text-right hidden sm:block">
+        <p id="event-name" class="text-sm font-semibold text-indigo-400">Loading event...</p>
+        <p id="event-date" class="text-xs text-gray-400"></p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <div class="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border border-indigo-500/20 rounded-2xl p-6 sm:p-8 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div>
+        <h2 id="hero-title" class="text-2xl sm:text-3xl font-extrabold text-white">Event Gallery</h2>
+        <p class="text-gray-300 text-sm mt-1">Select any image to view full resolution or download directly.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="photo-count" class="bg-gray-800 text-indigo-300 text-xs font-semibold px-3 py-1.5 rounded-full border border-gray-700">0 Photos</span>
+      </div>
+    </div>
+
+    <!-- Gallery Grid -->
+    <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <!-- Skeleton Loading Cards -->
+      <div class="animate-pulse bg-gray-900 rounded-xl h-64 border border-gray-800"></div>
+      <div class="animate-pulse bg-gray-900 rounded-xl h-64 border border-gray-800"></div>
+      <div class="animate-pulse bg-gray-900 rounded-xl h-64 border border-gray-800"></div>
+      <div class="animate-pulse bg-gray-900 rounded-xl h-64 border border-gray-800"></div>
+    </div>
+  </section>
+
+  <!-- Modal Lightbox -->
+  <div id="lightbox" class="fixed inset-0 z-50 bg-black/90 hidden items-center justify-center p-4">
+    <button onclick="closeLightbox()" class="absolute top-6 right-6 text-gray-400 hover:text-white p-2">
+      <i data-lucide="x" class="w-8 h-8"></i>
+    </button>
+    <div class="max-w-4xl max-h-[85vh] flex flex-col items-center">
+      <img id="lightbox-img" src="" alt="Expanded View" class="max-h-[75vh] object-contain rounded-lg shadow-2xl mb-4" />
+      <div class="flex items-center gap-4">
+        <a id="lightbox-download" href="" download target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-2.5 rounded-lg flex items-center gap-2 transition">
+          <i data-lucide="download" class="w-4 h-4"></i> Download High Res
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-t border-gray-800 py-6 bg-gray-950">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500">
+      &copy; 2026 Strange Pixels. Powered by Custom Web Architecture.
+    </div>
+  </footer>
+
+  <script>
+    // Initialize icons
+    lucide.createIcons();
+
+    async function loadGallery() {
+      try {
+        const response = await fetch('gallery.json');
+        const data = await response.json();
+
+        document.getElementById('event-name').textContent = data.eventName;
+        document.getElementById('hero-title').textContent = data.eventName;
+        document.getElementById('event-date').textContent = data.eventDate;
+        document.getElementById('photo-count').textContent = `${data.photos.length} Photos`;
+
+        const grid = document.getElementById('gallery-grid');
+        grid.innerHTML = '';
+
+        data.photos.forEach(photo => {
+          const card = document.createElement('div');
+          card.className = 'group relative bg-gray-900 border border-gray-800 rounded-xl overflow-hidden hover:border-indigo-500/50 transition duration-300 flex flex-col';
+          
+          card.innerHTML = `
+            <div class="aspect-w-4 aspect-h-3 w-full overflow-hidden bg-gray-950 cursor-pointer" onclick="openLightbox('${photo.previewUrl}', '${photo.downloadUrl}')">
+              <img src="${photo.previewUrl}" alt="${photo.title}" class="w-full h-56 object-cover group-hover:scale-105 transition duration-500 loading="lazy" />
+            </div>
+            <div class="p-4 flex items-center justify-between mt-auto bg-gray-900/80">
+              <span class="text-xs font-medium text-gray-300 truncate max-w-[150px]">${photo.title}</span>
+              <a href="${photo.downloadUrl}" download target="_blank" class="p-2 bg-gray-800 hover:bg-indigo-600 text-gray-300 hover:text-white rounded-lg transition" title="Download">
+                <i data-lucide="download" class="w-4 h-4"></i>
+              </a>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error("Error loading gallery:", err);
+      }
+    }
+
+    function openLightbox(imgUrl, downloadUrl) {
+      document.getElementById('lightbox-img').src = imgUrl;
+      document.getElementById('lightbox-download').href = downloadUrl;
+      document.getElementById('lightbox').classList.remove('hidden');
+      document.getElementById('lightbox').classList.add('flex');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.add('hidden');
+      document.getElementById('lightbox').classList.remove('flex');
+    }
+
+    loadGallery();
+  </script>
+</body>
+</html>
